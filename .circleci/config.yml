@@ -1,0 +1,23 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: circleci/node:14
+    steps:
+      - checkout
+      - run:
+          name: Deploy to Backend Server
+          command: |
+            set -e
+            cd /home/sanjeevmurmu761/workspace/package-listing-dev
+            git pull origin main
+            rm -rf package-lock.json
+            rm -rf node_modules
+            npm install
+            if pm2 list | grep -q "package-listing-dev"; then
+              # Application is already running, restart it
+              pm2 restart package-listing-dev
+            else
+              # Application is not running, start it
+              pm2 start app.js --name package-listing-dev
+            fi
